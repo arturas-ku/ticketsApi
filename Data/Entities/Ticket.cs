@@ -8,6 +8,8 @@
         public Project Project { get; set; }
         public int TicketTypeId { get; set; }
         public TicketType TicketType { get; set; }
+        public int TicketStatusId { get; set; }
+        public TicketStatus TicketStatus { get; set; }
         public ICollection<TicketComment> TicketComments { get; set; }
     }
 }

@@ -13,6 +13,7 @@ builder.Services.AddTransient<IProjectsRepository, ProjectsRepository>();
 builder.Services.AddTransient<ITicketsRepository, TicketsRepository>();
 builder.Services.AddTransient<ITicketTypesRepository, TicketTypesRepository>();
 builder.Services.AddTransient<ITicketCommentsRepository, TicketCommentsRepository>();
+builder.Services.AddTransient<ITicketStatusesRepository, TicketStatusesRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

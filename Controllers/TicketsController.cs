@@ -15,6 +15,7 @@ namespace SupportAPI.Controllers
         private readonly ITicketsRepository _ticketsRepo;
         private readonly IProjectsRepository _projectsRepo;
         private readonly ITicketTypesRepository _ticketTypesRepo;
+        private readonly ITicketStatusesRepository _ticketStatusesRepo;
         private readonly IMapper _mapper;
 
         private const string URI_DEFAULT = "api/tickets";
@@ -25,12 +26,14 @@ namespace SupportAPI.Controllers
             IMapper mapper,
             ITicketsRepository ticketsRepository, 
             IProjectsRepository projectsRepository, 
-            ITicketTypesRepository ticketTypesRepo)
+            ITicketTypesRepository ticketTypesRepo,
+            ITicketStatusesRepository ticketStatusesRepo)
         {
             _mapper = mapper;
             _ticketsRepo = ticketsRepository;
             _projectsRepo = projectsRepository;
             _ticketTypesRepo = ticketTypesRepo;
+            _ticketStatusesRepo = ticketStatusesRepo;
         }
 
         [HttpGet(URI_DEFAULT, Name = "GetAllTickets")]
@@ -115,6 +118,7 @@ namespace SupportAPI.Controllers
 
             var ticket = _mapper.Map<Ticket>(ticketDto);
             ticket.ProjectId = projectId;
+            ticket.TicketStatusId = 1;
             await _ticketsRepo.CreateAsync(ticket);
 
             return Created(URI_PROJECT_NESTED_SPECIFIC, _mapper.Map<TicketDto>(ticket));
@@ -136,6 +140,11 @@ namespace SupportAPI.Controllers
             var ticketType = await _ticketTypesRepo.GetAsync(updateTicketDto.TicketTypeId);
 
             if (ticketType == null)
+                return NotFound();
+
+            var ticketStatus = await _ticketStatusesRepo.GetAsync(updateTicketDto.TicketStatusId);
+
+            if (ticketStatus == null)
                 return NotFound();
 
             _mapper.Map(updateTicketDto, ticket);

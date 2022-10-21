@@ -9,6 +9,7 @@ namespace SupportAPI.Data
         public DbSet<Project> Projects { get; set; }
         public DbSet<TicketType> TicketTypes { get; set; }
         public DbSet<TicketComment> TicketComments { get; set; }
+        public DbSet<TicketStatus> TicketStatuses { get; set; }
 
         public SupportDbContext(DbContextOptions options) : base(options) { }
 
@@ -28,6 +29,11 @@ namespace SupportAPI.Data
                 .HasOne(o => o.Ticket)
                 .WithMany(o => o.TicketComments)
                 .HasForeignKey(o => o.TicketId);
+
+            modelBuilder.Entity<Ticket>()
+                .HasOne(o => o.TicketStatus)
+                .WithMany(o => o.Tickets)
+                .HasForeignKey(o => o.TicketStatusId);
         }
     }
 }

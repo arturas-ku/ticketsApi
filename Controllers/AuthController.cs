@@ -27,10 +27,6 @@ namespace SupportAPI.Controllers
         [Route("register")]
         public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
         {
-            var user = await _userManager.FindByEmailAsync(registerUserDto.Email);
-            if (user == null)
-                return BadRequest("Request invalid.");
-
             var newUser = _mapper.Map<AppUser>(registerUserDto);
 
             var createUserResult = await _userManager.CreateAsync(newUser, registerUserDto.Password);
@@ -58,6 +54,14 @@ namespace SupportAPI.Controllers
             var accessToken = _jwtTokenService.CreateAccessToken(user.UserName, user.Id, roles);
 
             return Ok(new SuccessfulLoginDto(accessToken));
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return Ok();
         }
     }
 }

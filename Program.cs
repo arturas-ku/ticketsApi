@@ -15,7 +15,7 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<SupportAPI.Data.DbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SupportDBDefault")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SupportDBOnline")));
 
 builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<SupportAPI.Data.DbContext>()

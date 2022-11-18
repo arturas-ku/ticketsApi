@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SupportAPI.Auth.Model;
+using SupportAPI.Data.Entities;
 
 namespace SupportAPI.Auth
 {

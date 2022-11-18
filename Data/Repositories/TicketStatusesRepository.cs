@@ -10,9 +10,9 @@ namespace SupportAPI.Data.Repositories
 
     public class TicketStatusesRepository : ITicketStatusesRepository
     {
-        private readonly SupportDbContext _context;
+        private readonly DbContext _context;
 
-        public TicketStatusesRepository(SupportDbContext context)
+        public TicketStatusesRepository(DbContext context)
         {
             _context = context;
         }

@@ -11,7 +11,7 @@ using SupportAPI.Data;
 
 namespace SupportAPI.Migrations
 {
-    [DbContext(typeof(SupportDbContext))]
+    [DbContext(typeof(Data.DbContext))]
     [Migration("20221020140009_TicketType Entity")]
     partial class TicketTypeEntity
     {

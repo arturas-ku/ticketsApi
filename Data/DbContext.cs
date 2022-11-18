@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using SupportAPI.Auth.Model;
 using SupportAPI.Data.Entities;
 
 namespace SupportAPI.Data
 {
-    public class SupportDbContext : DbContext
+    public class DbContext : IdentityDbContext<AppUser>
     {
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Project> Projects { get; set; }
@@ -11,10 +13,12 @@ namespace SupportAPI.Data
         public DbSet<TicketComment> TicketComments { get; set; }
         public DbSet<TicketStatus> TicketStatuses { get; set; }
 
-        public SupportDbContext(DbContextOptions options) : base(options) { }
+        public DbContext(DbContextOptions<DbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Ticket>()
                 .HasOne(o => o.Project)
                 .WithMany(o => o.Tickets)

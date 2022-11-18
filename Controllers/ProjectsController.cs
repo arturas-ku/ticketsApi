@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SupportAPI.Auth.Model;
 using SupportAPI.Data;
 using SupportAPI.Data.Dtos.Projects;
 using SupportAPI.Data.Entities;
@@ -12,6 +14,7 @@ namespace SupportAPI.Controllers
 {
 
     [ApiController]
+    [Authorize(Roles = AppRoles.Admin)]
     [Route("api/projects")]
     public class ProjectsController : ControllerBase
     {
@@ -56,8 +59,6 @@ namespace SupportAPI.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var project = await _projectsRepo.GetAsync(id);
-
-            // 404
             if (project == null)
                 return NotFound();
 
@@ -73,10 +74,9 @@ namespace SupportAPI.Controllers
         }
 
         [HttpPost(Name = "CreateProject")]
-        public async Task<ActionResult<ProjectDto>> Create(CreateProjectDto projectDto)
+        public async Task<ActionResult<ProjectDto>> Create(CreateProjectDto? projectDto)
         {
             var project = _mapper.Map<Project>(projectDto);
-
             await _projectsRepo.CreateAsync(project);
 
             // 201
@@ -84,11 +84,9 @@ namespace SupportAPI.Controllers
         }
 
         [HttpPut("{id}", Name = "UpdateProject")]
-        public async Task<ActionResult<ProjectDto>> Put(int id, UpdateProjectDto projectDto)
+        public async Task<ActionResult<ProjectDto>> Put(int id, UpdateProjectDto? projectDto)
         {
             var project = await _projectsRepo.GetAsync(id);
-
-            // 404
             if (project == null)
                 return NotFound();
 
@@ -103,8 +101,6 @@ namespace SupportAPI.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var project = await _projectsRepo.GetAsync(id);
-
-            // 404
             if (project == null)
                 return NotFound();
 

@@ -17,9 +17,9 @@ namespace SupportAPI.Data.Repositories
 
     public class TicketCommentsRepository : ITicketCommentsRepository
     {
-        private readonly SupportDbContext _context;
+        private readonly DbContext _context;
 
-        public TicketCommentsRepository(SupportDbContext context)
+        public TicketCommentsRepository(DbContext context)
         {
             _context = context;
         }

@@ -16,9 +16,9 @@ namespace SupportAPI.Data.Repositories
 
     public class ProjectsRepository : IProjectsRepository
     {
-        private readonly SupportDbContext _context;
+        private readonly DbContext _context;
 
-        public ProjectsRepository(SupportDbContext context)
+        public ProjectsRepository(DbContext context)
         {
             _context = context;
         }

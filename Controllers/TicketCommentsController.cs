@@ -1,17 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using SupportAPI.Data.Dtos.Tickets;
 using SupportAPI.Data;
 using SupportAPI.Data.Entities;
 using SupportAPI.Data.Repositories;
 using static SupportAPI.Data.Dtos.TicketComments.TicketCommentsDto;
 using SupportAPI.Data.Dtos.TicketComments;
-using static SupportAPI.Data.Dtos.Tickets.TicketsDto;
+using Microsoft.AspNetCore.Authorization;
+using SupportAPI.Auth.Model;
 
 namespace SupportAPI.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/projects/{projectId}/tickets/{ticketId}/ticketcomments")]
     public class TicketCommentsController : ControllerBase
     {
@@ -33,8 +34,18 @@ namespace SupportAPI.Controllers
         }
 
         [HttpGet(Name = "GetAllTicketComments")]
-        public async Task<IEnumerable<TicketCommentDto>> GetAll(int ticketId, [FromQuery] TicketCommentsSearchParameters searchParameters)
+        public async Task<ActionResult<TicketCommentDto>> GetAll(int projectId, int ticketId, [FromQuery] TicketCommentsSearchParameters searchParameters)
         {
+            var project = await _projectsRepo.GetAsync(projectId);
+
+            if (project == null)
+                return NotFound();
+
+            var ticket = await _ticketsRepo.GetAsync(projectId, ticketId);
+
+            if (ticket == null)
+                return NotFound();
+
             var ticketComments = await _ticketCommentsRepo.GetAllAsync(ticketId, searchParameters);
 
             var previousPageLink = ticketComments.HasPrevious ?
@@ -57,11 +68,11 @@ namespace SupportAPI.Controllers
 
             Response.Headers.Add("Pagination", JsonConvert.SerializeObject(paginationMetaData));
 
-            return ticketComments.Select(o => _mapper.Map<TicketCommentDto>(o));
+            return Ok(ticketComments.Select(o => _mapper.Map<TicketCommentDto>(o)));
         }
 
         [HttpPost]
-        public async Task<ActionResult<TicketCommentDto>> Create(int projectId, int ticketId, CreateTicketCommentDto ticketCommentDto)
+        public async Task<ActionResult<TicketCommentDto>> Create(int projectId, int ticketId, CreateTicketCommentDto? ticketCommentDto)
         {
             var project = await _projectsRepo.GetAsync(projectId);
 
@@ -82,8 +93,18 @@ namespace SupportAPI.Controllers
         }
 
         [HttpGet("{ticketCommentId}")]
-        public async Task<ActionResult<TicketCommentDto>> Get(int ticketCommentId, int ticketId)
+        public async Task<ActionResult<TicketCommentDto>> Get(int projectId, int ticketId, int ticketCommentId)
         {
+            var project = await _projectsRepo.GetAsync(projectId);
+
+            if (project == null)
+                return NotFound();
+
+            var ticket = await _ticketsRepo.GetAsync(projectId, ticketId);
+
+            if (ticket == null)
+                return NotFound();
+
             var ticketComment = await _ticketCommentsRepo.GetAsync(ticketCommentId, ticketId);
 
             if (ticketComment == null)
@@ -93,7 +114,7 @@ namespace SupportAPI.Controllers
         }
 
         [HttpPut("{ticketCommentId}")]
-        public async Task<ActionResult<TicketCommentDto>> Update(int ticketCommentId, int ticketId, int projectId, UpdateTicketCommentDto updateTicketCommentDto)
+        public async Task<ActionResult<TicketCommentDto>> Update(int ticketCommentId, int ticketId, int projectId, UpdateTicketCommentDto? updateTicketCommentDto)
         {
             var project = await _projectsRepo.GetAsync(projectId);
 
@@ -116,9 +137,20 @@ namespace SupportAPI.Controllers
             return Ok(_mapper.Map<TicketCommentDto>(ticketComment));
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpDelete("{ticketCommentId}")]
-        public async Task<ActionResult> Delete(int ticketCommentId, int ticketId)
+        public async Task<ActionResult> Delete(int ticketCommentId, int projectId, int ticketId)
         {
+            var project = await _projectsRepo.GetAsync(projectId);
+
+            if (project == null)
+                return NotFound();
+
+            var ticket = await _ticketsRepo.GetAsync(projectId, ticketId);
+
+            if (ticket == null)
+                return NotFound();
+
             var ticketComment = await _ticketCommentsRepo.GetAsync(ticketCommentId, ticketId);
 
             if (ticketComment == null)

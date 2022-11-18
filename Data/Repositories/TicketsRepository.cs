@@ -10,16 +10,16 @@ namespace SupportAPI.Data.Repositories
         Task CreateAsync(Ticket ticket);
         Task DeleteAsync(Ticket ticket);
         Task<Ticket?> GetAsync(int projectId, int ticketId);
-        Task<IReadOnlyList<Ticket>> GetAllAsync(int projectId, TicketSearchParameters searchParameters);
+        Task<PagedList<Ticket>> GetAllAsync(int projectId, TicketSearchParameters searchParameters);
         Task<PagedList<Ticket>> GetAllAsync(TicketSearchParameters searchParameters);
         Task PutAsync(Ticket ticket);
     }
 
     public class TicketsRepository : ITicketsRepository
     {
-        private readonly SupportDbContext _context;
+        private readonly DbContext _context;
 
-        public TicketsRepository(SupportDbContext context)
+        public TicketsRepository(DbContext context)
         {
             _context = context;
         }
@@ -32,7 +32,7 @@ namespace SupportAPI.Data.Repositories
                 .CreateAsync(queryable, searchParameters.PageNumber, searchParameters.PageSize);
         }
 
-        public async Task<IReadOnlyList<Ticket>> GetAllAsync(int projectId, TicketSearchParameters searchParameters)
+        public async Task<PagedList<Ticket>> GetAllAsync(int projectId, TicketSearchParameters searchParameters)
         {
             var queryable = _context.Tickets
                 .Where(o => o.ProjectId == projectId)
